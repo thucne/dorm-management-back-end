@@ -1,4 +1,4 @@
-# DORMITORY MANAGEMENT web application, the back-end side.
+# DORMITORY MANAGEMENT using NodeJS.
 This is about the an app that can be used to manage the dormitory or something with a similar function.
 
 ## Tools
