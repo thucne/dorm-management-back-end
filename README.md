@@ -5,7 +5,7 @@ This is about the an app that can be used to manage the dormitory or something w
 * JavaScript softwaresm, frameworks and libaries: NodeJS, ExpressJS, APIs.
 * Third-party softwares: MongoDB.
 
-## Functionalities:
+## Functionalities
 * Processes, secures, manages the data.
 * Deployed succesfully.
 
