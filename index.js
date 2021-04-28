@@ -5,6 +5,7 @@
   import dotenv from 'dotenv';
   import cloudinary from 'cloudinary';
   import Student from './models/student.js';
+  import Room from './models/room.js';
 
   const app = express();
 
@@ -56,7 +57,7 @@
           //   }
           //   const allData = new Student({...newStudent });
           //   await allData.save();
-          const allData = await Student.find();
+          const allData = await Room.find();
           res.status(200).json(allData);
       } catch (error) {
           res.status(404).json({ message: error.message })
