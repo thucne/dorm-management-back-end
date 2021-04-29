@@ -1,25 +1,5 @@
 import mongoose from 'mongoose';
-// const studentschema = new mongoose.Schema({
-//     _id: {
-//         type: mongoose.Schema.Types.ObjectId,
-//         ref: 'Student'
-//     },
-//     semester: {
-//         type: String,
-//         require: true,
-//         ref: 'Student'
-//     },
-//     from: {
-//         type: String,
-//         require: true,
-//         ref: 'Student'
-//     },
-//     to: {
-//         type: String,
-//         require: true,
-//         ref: 'Student'
-//     }
-// })
+
 const roomSchema = mongoose.Schema({
     dorm: { type: String, require: true },
     block: { type: String, require: true },
