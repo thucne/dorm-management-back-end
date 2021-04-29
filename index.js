@@ -6,6 +6,9 @@
   import cloudinary from 'cloudinary';
   import Student from './models/student.js';
   import Room from './models/room.js';
+  import Bill from './models/bill.js';
+  import Admin from './models/admin.js';
+  import UtilityBill from './models/utilitybill.js';
 
   const app = express();
 
@@ -57,7 +60,7 @@
           //   }
           //   const allData = new Student({...newStudent });
           //   await allData.save();
-          const allData = await Room.find();
+          const allData = await UtilityBill.find();
           res.status(200).json(allData);
       } catch (error) {
           res.status(404).json({ message: error.message })
