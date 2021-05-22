@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require("mongoose");
 const utilitySchema = mongoose.Schema({
     room: {
         type: mongoose.Schema.Types.ObjectId,
@@ -13,4 +13,3 @@ const utilitySchema = mongoose.Schema({
 });
 
 const UtilityBill = mongoose.model("Utility", utilitySchema, 'UtilityBill');
-export default UtilityBill;
