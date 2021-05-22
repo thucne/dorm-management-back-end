@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require("mongoose");
 
 const studentSchema = mongoose.Schema({
     full_name: { type: String, require: true },
@@ -35,4 +35,3 @@ const studentSchema = mongoose.Schema({
 });
 
 const Student = mongoose.model("Student", studentSchema, 'Student');
-export default Student;

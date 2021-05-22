@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+const mongoose = require("mongoose");
 const billSchema = mongoose.Schema({
     receipt: { type: Number, require: true },
     semester: {
@@ -36,4 +36,3 @@ const billSchema = mongoose.Schema({
 });
 
 const Bill = mongoose.model("Bill", billSchema, 'Bill');
-export default Bill;
