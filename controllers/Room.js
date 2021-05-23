@@ -1,6 +1,6 @@
-const Room = require('../models/room');
+const Room = require('../models/room.js');
 const Admin = require('../models/admin.js');
-const Student = require('../models/student');
+const Student = require('../models/student.js');
 
 exports.addRoom = async(req, res) => {
 
@@ -28,6 +28,7 @@ exports.addRoom = async(req, res) => {
     });
 
 
+
     await room.save(function(err, data) {
         if (err) {
             console.log(err);
@@ -41,40 +42,36 @@ exports.addRoom = async(req, res) => {
     })
 
 };
-exports.showResidentRoom = async(req, res) => {
-    let student = req.params.studentlist;
-    Room.findOne({ student })
-        .populate('studentlist', 'semester from to')
+exports.showAllRoom = async(req, res) => {
+    await Room.find({}).exec().then(room => res.json({ data: room }));
 
-
-    .exec((err, room) => {
-        if (err) {
-            return res.status(400).json({
-                error: err
-            })
-        }
-        res.json(room)
-    })
 };
-exports.showRoomate = async(req, res) => {
-    let student = req.params.studentlist;
-    Room.find({ student })
-        .populate('studentlist', 'full_name gender academic_year field_of_major')
-        .exec((err, room) => {
+exports.showResidentRoom = async(req, res) => {
+    let _id = req.params._id;
+    await Room.findById(_id)
+        .populate("studentlist._id", "full_name")
+        .exec((err, result) => {
             if (err) {
                 return res.status(400).json({
                     error: err
                 })
-                res.json(room)
             }
+            res.json({ data: result })
         })
 };
-exports.returnRoom = async(req, res) => {
-    let name = req.body.full_name;
-    let id = req.body.identity_card;
-    let gender = req.body.gender;
-    let room = req.body.room;
-    let date = req.body.date;
-    let note = req.body.note;
+
+exports.deleteRoom = async(req, res) => {
+    Room.deleteOne({ _id: req.params._id }, function(err) {
+        if (err) return res.status(400).json({ msg: "Delete not complete" });
+        else return status(200).json({ msg: "delete completed" });
+    });
+}
+
+exports.updateRoom = async(req, res) => {
+    Room.updateOne({ _id: req.params._id })
+        .exec((err, result) => {
+            if (err) return res.status(400).json({ msg: err.message });
+            res.json({ data: result });
+        })
 
 }
