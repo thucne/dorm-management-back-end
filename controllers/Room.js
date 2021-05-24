@@ -15,17 +15,15 @@ exports.addRoom = async(req, res) => {
     room.dorm_ID = req.body.dorm_ID;
     room.floor = req.body.floor;
     room.note = req.body.note;
-    var studentlist = req.body.studentlist;
+
     if (room.room_type == 2) {
-        return studentlist.length <= 2;
+        return room.studentlist.length <= 2;
     } else if (room.room_type == 4) {
-        return studentlist.length <= 4;
+        return room.studentlist.length <= 4;
     } else if (room.room_type == 6) {
-        return studentlist.length <= 6;
+        return room.studentlist.length <= 6;
     }
-    studentlist.map((student, index) => {
-        room.studentlist.push(student)
-    });
+
 
 
 
@@ -42,6 +40,33 @@ exports.addRoom = async(req, res) => {
     })
 
 };
+
+exports.addStudent = async(req, res) => {
+    let studentlist = req.body.studentlist
+    await Room.findById(req.params._id)
+        .exec((err, result) => {
+            if (err) {
+                return res.status(400).json({
+                    error: err
+                })
+            }
+            studentlist.map((student, index) => {
+                result.studentlist.push(student)
+            });
+            result.save(function(err, data) {
+                if (err) {
+                    console.log(err);
+                    return res.status(404).json({ error: err });
+                } else {
+                    return res.status(201).json({
+                        msg: "Add student successly"
+                    })
+
+                }
+            })
+        })
+}
+
 exports.showAllRoom = async(req, res) => {
     await Room.find({}).exec().then(room => res.json({ data: room }));
 
@@ -62,8 +87,10 @@ exports.showResidentRoom = async(req, res) => {
 
 exports.deleteRoom = async(req, res) => {
     Room.deleteOne({ _id: req.params._id }, function(err) {
-        if (err) return res.status(400).json({ msg: "Delete not complete" });
-        else return status(200).json({ msg: "delete completed" });
+        if (err)
+            return res.status(400).json({ msg: "Delete not complete" });
+        else
+            return res.status(200).json({ msg: "Delete completed" });
     });
 }
 
