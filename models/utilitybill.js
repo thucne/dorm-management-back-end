@@ -15,7 +15,11 @@ const utilitySchema = mongoose.Schema({
         recentrecord: { type: Number, require: true },
 
     }],
-    paymentstatus: { type: Boolean, require: true },
+    paymentstatus: {
+        type: Boolean,
+        require: true,
+        default: false
+    },
     note: { type: String, default: '' }
 
 });

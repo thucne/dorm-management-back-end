@@ -5,8 +5,15 @@ exports.addUtilitybill = async(req, res) => {
     let utility = new UtilityBill();
     utility.room = req.body.room;
     utility.recorddate = req.body.recorddate;
-    utility.power = req.body.power;
-    utility.water = req.body.water;
+    let power = req.body.power
+    power.map((record, index) => {
+        utility.power.push(record)
+    });
+    let water = req.body.water
+    water.map((record, index) => {
+        utility.water.push(record)
+    });
+    utility.note = req.body.note;
 
     await utility.save(function(err, data) {
         if (err) {
@@ -33,6 +40,16 @@ exports.getUtilityById = async(req, res) => {
 
 }
 
+exports.DeleteUtilityWithDate = async(req, res) => {
+    let recorddate = req.body.recorddate;
+    UtilityBill.deleteMany({ recorddate: recorddate }, function(err) {
+        if (err)
+            return res.status(400).json({ msg: "Delete all bill with related date not complete" });
+        else
+            return res.status(200).json({ msg: "delete all bill with related date completed" });
+    });
+}
+
 // exports.getUtilityByRoom = async(req, res) => {
 //     let room = req.body.room;
 //     await UtilityBill.findOne({ room: req.body.room })
@@ -53,8 +70,10 @@ exports.getUtilityById = async(req, res) => {
 // }
 exports.deletebill = async(req, res) => {
     UtilityBill.deleteOne({ _id: req.params._id }, function(err) {
-        if (err) return res.status(400).json({ msg: "Delete not complete" });
-        else return status(200).json({ msg: "delete completed" });
+        if (err)
+            return res.status(400).json({ msg: "Delete not complete" });
+        else
+            return res.status(200).json({ msg: "delete completed" });
     });
 }
 
