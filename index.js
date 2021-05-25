@@ -5,9 +5,13 @@ const cors = require('cors');
 
 
 const connectMongoDB = require('./config/DB')
-    //const productRoute = require('./routes/productRoute')
-    // init app
-const app = express()
+
+//const productRoute = require('./routes/productRoute')
+// init app
+const app = express();
+
+app.use(cors());
+
 
 app.use(cors());
 
@@ -19,15 +23,18 @@ app.use(morgan('dev'))
 
 // routes
 app.use(express.json());
+
+app.use('/', (req, res) => {
+    res.status(200).json({ message: 'Welcome to iu dormitory backend!' })
+})
 app.use('/admin', require('./routes/admin.js'));
 app.use('/student', require('./routes/student.js'));
-app.use('/room', require('./routes/room.js'));
+//app.use('/room',require('./routes/room.js'));
 //app.use('/bill',require('./routes/bill.js'));
-app.use('/utilitybill', require('./routes/utilitybill.js'));
-app.use('/requestfix', require('./routes/requestfix.js'));
+//app.use('/utilitybill',require('./routes/utilitybill.js'));
+//app.use('/requestfix',require('./routes/requestfix.js'));
 app.use('/requestreturn', require('./routes/requestreturn.js'));
 app.use('/notification', require('./routes/notification.js'));
-
 
 
 //connect database
