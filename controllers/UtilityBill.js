@@ -100,3 +100,17 @@ exports.showNonPaidBill = async(req, res) => {
             res.json({ data: result })
         })
 }
+
+exports.showNonPaidBillByDate = async(req, res) => {
+    recorddate = req.body.recorddate;
+    await UtilityBill.find({ recorddate: recorddate, paymentstatus: false })
+        .populate('room', 'dorm block room')
+        .exec((err, result) => {
+            if (err) {
+                return res.status(401).json({
+                    error: err
+                })
+            }
+            res.json({ data: result })
+        })
+}
