@@ -102,3 +102,27 @@ exports.updateRoom = async(req, res) => {
         })
 
 }
+
+exports.adminSeeRoomByDorm = async(req, res) => {
+    Room.find({ dorm: req.body.dorm })
+        .exec((err, result) => {
+            if (err) return res.status(400).json({ msg: err.message });
+            res.json({ data: result });
+        })
+}
+
+exports.adminSeeRoomByDormBlock = async(req, res) => {
+    Room.find({ dorm: req.body.dorm, block: req.body.block })
+        .exec((err, result) => {
+            if (err) return res.status(400).json({ msg: err.message });
+            res.json({ data: result });
+        })
+}
+
+exports.adminSeeRoomType = async(req, res) => {
+    Room.find({ room_type: req.body.room_type })
+        .exec((err, result) => {
+            if (err) return res.status(400).json({ msg: err.message });
+            res.json({ data: result });
+        })
+}
