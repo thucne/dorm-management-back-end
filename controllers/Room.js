@@ -95,7 +95,12 @@ exports.deleteRoom = async(req, res) => {
 }
 
 exports.updateRoom = async(req, res) => {
-    Room.updateOne({ _id: req.params._id })
+    Room.updateOne({ _id: req.params._id }, {
+            $set: {
+                room_type: req.body.room_type,
+                note: req.body.note
+            }
+        })
         .exec((err, result) => {
             if (err) return res.status(400).json({ msg: err.message });
             res.json({ data: result });
@@ -112,7 +117,7 @@ exports.adminSeeRoomByDorm = async(req, res) => {
 }
 
 exports.adminSeeRoomByDormBlock = async(req, res) => {
-    Room.find({ dorm: req.body.dorm, block: req.body.block })
+    Room.find({ block: req.body.block })
         .exec((err, result) => {
             if (err) return res.status(400).json({ msg: err.message });
             res.json({ data: result });
@@ -121,6 +126,23 @@ exports.adminSeeRoomByDormBlock = async(req, res) => {
 
 exports.adminSeeRoomType = async(req, res) => {
     Room.find({ room_type: req.body.room_type })
+        .exec((err, result) => {
+            if (err) return res.status(400).json({ msg: err.message });
+            res.json({ data: result });
+        })
+}
+
+exports.adminSeeRoomByBlockFloor = async(req, res) => {
+    Room.find({ block: req.body.block, floor: req.body.floor })
+        .exec((err, result) => {
+            if (err) return res.status(400).json({ msg: err.message });
+            res.json({ data: result });
+        })
+}
+
+exports.adminSeeRoomByDormID = async(req, res) => {
+    Room.find({ dorm_ID: req.body.dorm_ID })
+        .populate("studentlist", "full_name")
         .exec((err, result) => {
             if (err) return res.status(400).json({ msg: err.message });
             res.json({ data: result });
