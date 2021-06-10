@@ -10,7 +10,7 @@ router.get('/get/info',requirestudentLogin,getStudentInfo);//see info themselves
 router.get('/get/account/:_id',requirestudentLogin,getStudentAccount);//see account info(email,activestatus)
 router.put('/edit/account/:_id',requirestudentLogin,studentEditAccount);////edit password of their account
 router.put('/edit/info/:_id',requirestudentLogin,studentEditInfo);////edit password of their account
-router.get('/get/request/return/:_id',requirestudentLogin,getRequestReturn);////student get request return
+router.get('/get/request/return',requirestudentLogin,getRequestReturn);////student get request return
 router.post('/request/return',requirestudentLogin,requestReturn);////student send request return
 router.get('/get/request/fix',requirestudentLogin,getRequestFix);////student get request fix
 router.post('/request/fix',requirestudentLogin,requestFix);////student send request fix

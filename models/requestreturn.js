@@ -9,7 +9,7 @@ const requestreturn = mongoose.Schema({
     student:{
         type: mongoose.Schema.Types.ObjectId,
         require:true,
-        ref: 'Student'
+        ref: 'student'
     },
     accept:{
         type:Boolean,

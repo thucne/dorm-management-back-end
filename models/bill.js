@@ -15,7 +15,7 @@ const billSchema = mongoose.Schema({
     },
     own: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Student'
+        ref: 'student'
     },
     cashier: {
         type: mongoose.Schema.Types.ObjectId,
