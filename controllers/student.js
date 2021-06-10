@@ -117,7 +117,7 @@ exports.studentSeeStudent = (req, res) => {
 }
 exports.getStudentInfo=(req,res)=>{
 	let {_id} = req.user;
-	Student.findById(_id).populate("room","_id dorm block floor room room_type dorm_ID").populate("stayindorm","_id room")
+	Student.findById(_id).populate("room","_id dorm block floor room room_type dorm_ID").populate("stayindorm","_id dorm block floor room room_type dorm_ID")
 		.exec((err, result) => {
 			if (err) {
 				return res.status(400).json({
@@ -223,15 +223,19 @@ exports.getRequestReturn=async(req,res)=>{
 
 };
 exports.getBill=async(req,res)=>{
-    Bill.find({own:req.params._id}).populate("own","_id full_name email").populate("room","room dorm_ID").populate("cashier","name email tel").sort({"createOn":-1})
+	const {_id} = req.user;
+	console.log('id is ', _id, 'room id is ', req.params.room_id)
+    Bill.find({own:_id}).populate("own","_id full_name email").populate("room","room dorm_ID").populate("cashier","name email tel").sort({"createOn":-1})
     .exec((err, resultBill) => {
         if (err) {
+			console.log('err Bill', err);
             return res.status(400).json({
                 error: err
             })
         }
 			UtilityBill.find({room:req.params.room_id}).populate("room","_id block floor room").sort({"createAt":-1}).exec((err,resultUtility)=>{
 			if (err) {
+				console.log('utility Bill', err);
 				return res.status(400).json({
 					error: err
 				})

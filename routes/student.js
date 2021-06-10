@@ -14,5 +14,5 @@ router.get('/get/request/return/:_id',requirestudentLogin,getRequestReturn);////
 router.post('/request/return',requirestudentLogin,requestReturn);////student send request return
 router.get('/get/request/fix',requirestudentLogin,getRequestFix);////student get request fix
 router.post('/request/fix',requirestudentLogin,requestFix);////student send request fix
-router.get('/get/bill/:_id/:room_id',requirestudentLogin,getBill);////student get bill
+router.get('/get/bill/:room_id',requirestudentLogin,getBill);////student get bill
 module.exports = router
