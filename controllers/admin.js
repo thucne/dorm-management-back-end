@@ -1,4 +1,4 @@
-const Admin = require('../models/admin')
+const Admin = require('../models/admin');
 const Student = require('../models/student')
 const Room = require('../models/room')
 const bcrypt = require('bcryptjs');
@@ -67,6 +67,7 @@ exports.createAdminAccount=async(req,res)=>{
 exports.adminLogin = async (req, res) => {
 	let user = {};
 	user.email = req.body.email;
+	if (!user.email) res.status(404).json({message: 'Unauthorized access!'});
 	//let hash = bcrypt.hashSync(req.body.password, 10);
 	//let userModel = new admin(user);
 	const result = await Admin.findOne({
