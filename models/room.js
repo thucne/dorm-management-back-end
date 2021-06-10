@@ -7,11 +7,10 @@ const roomSchema = mongoose.Schema({
     room: { type: String, require: true },
     room_type: { type: Number, require: true },
     dorm_ID: { type: String, require: true },
-    studentlist: {
+    studentlist: [{
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Student',
-        default: []
-    },
+        ref: 'Student'
+    }],
     note: {
         type: String,
         default: ''
@@ -19,4 +18,4 @@ const roomSchema = mongoose.Schema({
 
 });
 
-const Room = mongoose.model("Room", roomSchema, 'Room');
+module.exports=Room = mongoose.model("Room", roomSchema, 'Room');

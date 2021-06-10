@@ -1,32 +1,33 @@
 const mongoose = require("mongoose");
 const billSchema = mongoose.Schema({
-    receipt: { type: Number, require: true },
+    receipt: { type: String, require: true },
     semester: {
         type: String,
-        require: true,
-        ref: 'Student'
+        require: true
+    },
+    createOn:{
+        type:Date,
+        default:Date.now()
     },
     duration: {
         type: String,
         require: true
     },
     own: {
-        type: Object,
-        default: {},
+        type: mongoose.Schema.Types.ObjectId,
         ref: 'Student'
     },
     cashier: {
-        type: Object,
-        default: {},
-        ref: 'cashier'
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Admin'
     },
     total: {
         type: Number,
         require: true
     },
     paymentstatus: {
-        type: String,
-        require: true
+        type: Boolean,
+        default: false
     },
     content: {
         type: String,
@@ -35,4 +36,4 @@ const billSchema = mongoose.Schema({
 
 });
 
-const Bill = mongoose.model("Bill", billSchema, 'Bill');
+module.exports=Bill = mongoose.model("Bill", billSchema, 'Bill');

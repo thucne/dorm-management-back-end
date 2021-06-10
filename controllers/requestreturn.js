@@ -23,8 +23,8 @@ exports.studentRequestReturn = async (req, res) => {
 			return res.status(201).json({ msg: "Create request success" });
 	});
 }
-exports.studentCheckRequestReturn = (req, res) => {
-	Requestreturn.find({student:req.body._id}).populate("student","full_name").populate("room","room")
+exports.seeDetailRequestReturn = (req, res) => {
+	Requestreturn.find({_id:req.params._id}).populate("student","full_name").populate("room","room")
 		.exec((err, result) => {
 			if (err) {
 				return res.status(400).json({
@@ -34,20 +34,18 @@ exports.studentCheckRequestReturn = (req, res) => {
 			res.json({data:result})
 		})
 }
-exports.studentCancelRequestReturn = (req, res) => {
-	Requestreturn.deleteOne({ student: req.body._id }, function (err) {
+exports.cancelRequestReturn = (req, res) => {
+	Requestreturn.deleteOne({_id: req.params._id }, function (err) {
         if (err) return res.status(402).json({ msg: "Delete not complete" });
         else return status(200).json({ msg: "delete completed" });
         // deleted at most one tank document
     });
 }
 exports.showAllRequestReturn = async (req, res) => {
-    let limit = parseInt(req.query.limit) || 10
-    let page = parseInt(req.query.page) || 1
-    await Requestreturn.find({}).limit(limit).skip((page - 1) * limit)
+    await Requestreturn.find({})
         .sort({ "sendDate": -1 })
-        .populate('room','room block')
-        .populate('student','_id full_name').exec((err, form) => {
+        .populate('room','room block dorm_ID')
+        .populate('student','_id full_name email').exec((err, form) => {
             if (err) {
                 return res.status(401).json({
                     error: err
@@ -59,7 +57,7 @@ exports.showAllRequestReturn = async (req, res) => {
 exports.adminAcceptRequest = (req, res) => {
 	let _id = req.params._id;
     Requestreturn.updateOne({_id:_id} , {
-       accept:!accept
+       accept:true
     }, { new: true }).exec((err, result) => {
         if (err) {
             return res.status(400).json({
@@ -70,12 +68,10 @@ exports.adminAcceptRequest = (req, res) => {
     })
 }
 exports.showNonAccept = async (req, res) => {
-    let limit = parseInt(req.query.limit) || 10
-    let page = parseInt(req.query.page) || 1
-    await Requestreturn.find({accept:false}).limit(limit).skip((page - 1) * limit)
+    await Requestreturn.find({accept:false})
         .sort({ "sendDate": -1 })
         .populate('room','room block')
-        .populate('student','_id full_name').exec((err, form) => {
+        .populate('student','_id full_name email').exec((err, form) => {
             if (err) {
                 return res.status(401).json({
                     error: err
@@ -84,8 +80,8 @@ exports.showNonAccept = async (req, res) => {
             res.json({ data: form })
         })
 }
-exports.adminSeeDetail = (req, res) => {
-    Requestreturn.find({_id:req.params._id}).populate("student","full_name photo academic_year").populate("room","room block dorm")
+exports.studentGetForm=async(req,res)=>{
+    Requestreturn.find({student:req.params._id}).populate("student","full_name email").populate("room","room dorm_ID")
     .exec((err, result) => {
         if (err) {
             return res.status(400).json({
@@ -94,4 +90,5 @@ exports.adminSeeDetail = (req, res) => {
         }
         res.json({data:result})
     })
+
 }

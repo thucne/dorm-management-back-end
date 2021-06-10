@@ -37,6 +37,33 @@ exports.adminRegister = async (req, res) => {
 
 
 };
+exports.createAdminAccount=async(req,res)=>{
+	let form = new formidable.IncomingForm();
+	form.keepExtensions = true;
+
+	form.parse(req, (err, fields, files) => {
+		if (err) {
+			return res.status(400).json({ error: err })
+		}
+		var {name,gender,email,password,tel} = fields
+		let user={}
+		user.name=name;
+		user.gender=gender;
+		user.email=email;
+		user.tel=tel;
+		user.password=bcrypt.hashSync(password, 10);
+		let adminModel=new Admin(user);
+		adminModel.save((err, result) => {
+			if (err) {
+				return res.status(400).json({
+					error: err
+				})
+			}
+			res.json({ msg: 'Send request successfully'})
+		})
+
+		})
+}
 exports.adminLogin = async (req, res) => {
 	let user = {};
 	user.email = req.body.email;
@@ -46,13 +73,26 @@ exports.adminLogin = async (req, res) => {
 		email: user.email
 	});
 	if (result && bcrypt.compareSync(req.body.password, result.password)) {
-		const token = jwt.sign({ _id: result._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
-		res.cookie('token', token, { expiresIn: '10d' })
-		const { _id, name,email,tel } = result
-		return res.json({
-			token: token,
-			user: {_id,name,email,tel}
-		});
+		var re=req.params.remember
+		if(re){
+			const token = jwt.sign({ _id: result._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
+			const { _id, name,email,tel } = result
+			return res.json({
+				token: token,
+				user: {_id,name,email,tel},
+				role:1
+			});
+		}
+		else{
+			const token = jwt.sign({ _id: result._id }, process.env.JWT_SECRET);
+			//res.cookie('token', token, { expiresIn: '10d' })
+			const { _id, name,email,tel } = result
+			return res.json({
+				token: token,
+				user: {_id,name,email,tel},
+				role:1
+			});
+		}
 
 	}
 	else
@@ -70,42 +110,16 @@ exports.adminSearchStudentByName = (req, res) => {
 			res.json({data:result})
 		})
 }
-
-exports.adminSeeRoomByBlock = (req, res) => {
-	Room.find({block:req.body.block})
-	.select('_id room')
-		.exec((err, result) => {
-			if (err) {
-				return res.status(400).json({
-					error: err
-				})
-			}
-			res.json({name:req.body.block,number:result.length,rooms:result})
-		})
-}
-exports.adminSeeStudentByRoom = (req, res) => {
-	Room.findById(req.body._id)
-	.populate("studentlist","_id full_name photo")
-		.exec((err, result) => {
-			if (err) {
-				return res.status(400).json({
-					error: err
-				})
-			}
-			res.json({room:result.room,data:result.studentList})
-		})
-}
 exports.adminSeeStudent = (req, res) => {
 	let _id = req.params._id;
-	Student.findById(_id)
+	Student.findById(_id).populate("room","_id room dorm_ID").populate("stayindorm","_id room")
 		.exec((err, result) => {
 			if (err) {
 				return res.status(400).json({
 					error: err
 				})
 			}
-			const { full_name,identity_card,dob, gender,academic_year,field_of_major,folk,email,religion,country,brandname,parentname,address,telparent,tel } = result
-			res.json({student:{full_name,identity_card,dob, gender,academic_year,field_of_major,folk,email,religion,country,brandname,parentname,address,telparent,tel} })
+			res.json({student:result})
 		})
 }
 exports.adminUpdateActiveStudent = (req, res) => {
@@ -120,4 +134,105 @@ exports.adminUpdateActiveStudent = (req, res) => {
         }
        res.json({result});
     })
+}
+exports.getStudentList=(req,res)=>{
+	Student.find({}).populate("room","_id room dorm_ID").populate("stayindorm","_id room").exec((err, result) => {
+		if (err) {
+			return res.status(400).json({
+				error: err
+			})
+		}
+		res.json({data:result})
+	})
+}
+exports.getAdminAccount=(req,res)=>{
+	Admin.find({_id:req.body._id}).select("email name").exec((err, result) => {
+		if (err) {
+			return res.status(400).json({
+				error: err
+			})
+		}
+		res.json({data:result})
+	})
+}
+exports.getAdminInfo=(req,res)=>{
+	Admin.find({_id:req.params._id}).select("name gender email tel").exec((err, result) => {
+		if (err) {
+			return res.status(400).json({
+				error: err
+			})
+		}
+		res.json({data:result})
+	})
+}
+exports.editAccount=(req,res)=>{
+	Admin.findById(req.params._id).exec((err, oldUser) => {
+		if (err) {
+			return res.status(400).json({
+				error: err
+			})
+		}
+		let form = new formidable.IncomingForm();
+		form.keepExtensions = true;
+
+		form.parse(req, (err, fields, files) => {
+			if (err) {
+				return res.status(400).json({ error: err })
+			}
+			var {email, oldpassword, newpassword, reenterpassword } = fields
+			if (oldpassword != null && String(oldpassword).trim().length > 0) {
+				let hash = bcrypt.hashSync((oldpassword), 10);
+				if (bcrypt.compareSync(oldpassword, oldUser.password) == false)
+					return res.status(400).json({ error: "Password wrong" })
+				else {
+					if (newpassword == null || String(newpassword).trim().length == 0)
+						return res.status(400).json({ error: "You should decleare new password" })
+					else if (reenterpassword == null || String(newpassword).trim() != String(reenterpassword).trim())
+						return res.status(400).json({ error: "Reenter password not correct" })
+					oldUser.password = bcrypt.hashSync(String(newpassword).trim(), 10);
+				}
+			}
+			oldUser.save((err, result) => {
+				if (err) {
+					return res.status(400).json({
+						error: err
+					})
+				}
+				res.json({ msg: 'Update admin account sucessfully', data: oldUser })
+			})
+
+		})
+	})
+
+}
+exports.editInfo=(req,res)=>{
+	Admin.findById(req.params._id).exec((err, oldUser) => {
+		if (err) {
+			return res.status(400).json({
+				error: err
+			})
+		}
+		let form = new formidable.IncomingForm();
+		form.keepExtensions = true;
+
+		form.parse(req, (err, fields, files) => {
+			if (err) {
+				return res.status(400).json({ error: err })
+			}
+			var {name,gender,tel } = fields
+			oldUser.name=name;
+			oldUser.gender=gender;
+			oldUser.tel=tel;
+			oldUser.save((err, result) => {
+				if (err) {
+					return res.status(400).json({
+						error: err
+					})
+				}
+				res.json({ msg: 'Update admin info sucessfully', data: oldUser })
+			})
+
+		})
+	})
+
 }

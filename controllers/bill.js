@@ -16,9 +16,9 @@ exports.checkBill = (req, res) => {
        res.json({result});
     })
 }
-exports.adminSeeBillOfStudent = (req, res) => {
+exports.seeBillOfStudent = (req, res) => {
     let _id = req.params._id;
-	Bill.find({own:_id}).populate("own","_id full_name photo").sort({ "createAt": -1 })
+	Bill.find({own:_id}).sort({ "createOn": -1 })
 		.exec((err, result) => {
 			if (err) {
 				return res.status(400).json({
@@ -30,7 +30,7 @@ exports.adminSeeBillOfStudent = (req, res) => {
 }
 exports.seeBillDetail = (req, res) => {
     let _id = req.params._id;
-	Bill.findById(_id).populate("own","_id full_name photo").populate("cashier","_id name").sort({ "createAt": -1 })
+	Bill.findById(_id).populate("own","_id full_name email room ").populate("cashier","_id name email")
 		.exec((err, result) => {
 			if (err) {
 				return res.status(400).json({
@@ -40,6 +40,7 @@ exports.seeBillDetail = (req, res) => {
 			res.json({data:result})
 		})
 }
+/*
 exports.showAllBillBySemester = (req, res) => {
     semester=req.params.semester
     let limit = parseInt(req.query.limit) || 20
@@ -71,35 +72,37 @@ exports.showAllBillNonPaidBySemester = (req, res) => {
             }
             res.json({ data: result })
         })
-}
-exports.createBillForStudent = (req, res) => {
-    const { semester,duration,own,createAt,cashier,total,content } = req.body;
-	const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-	if (!email || !password||!gender||!name||!tel)
-		return res.status(422).json({ error: "Please enter all the  fields" });
-	if (re.test(String(email).toLowerCase()) == false)
-		return res.status(422).json({ error: "Invalid email" });
-
-	Admin.findOne({ email }, async(err, existedUser) => {
-		if (existedUser) {
-			return res.status(401).json({
-				error: "Email is already existed"
-			})
-		}
-		let user = {};
-		user.email = email;
-		user.password = bcrypt.hashSync(password, 10);
-		user.name = name;
-        user.gender=gender;
-        user.tel=tel;
-		//.catch(err=>console.log(err));
-		let adminModel = new Admin(user);
-		await adminModel.save(function (err, data) {
-			if (err)
-				return res.status(422).json({ error: "Error occurs while processing, please try again." });
-			else
-				return res.status(201).json({ msg: "Register account for admin successly" });
+}*/
+exports.createBill = async(req, res) => {
+    const {receipt,semester,duration,own,cashier,total,paymentstatus,content} = req.body;
+	let b={}
+	b.receipt=receipt
+	b.semester=semester
+	b.duration=duration
+	b.own=own
+	b.cashier=cashier
+	b.total=total
+	b.paymentstatus=paymentstatus
+	b.content=content
+	let billModel = new Bill(b);
+	await billModel.save(function (err, data) {
+		if (err)
+			return res.status(422).json({ error: "Error occurs while processing, please try again." });
+		else
+			return res.status(201).json({ msg: "Created bill successly" });
 		});
-	})
+}
+exports.showAllBillNonPaid = async (req, res) => {
+    await Bill.find({paymentstatus:false})
+        .sort({ "createOn": -1 })
+        .populate('own','_id full_name room')
+        .populate('cashier','_id name').exec((err, result) => {
+            if (err) {
+                return res.status(401).json({
+                    error: err
+                })
+            }
+            res.json({ data: result })
+        })
 }
 
