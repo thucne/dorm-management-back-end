@@ -65,8 +65,10 @@ exports.studentLogin = async (req, res) => {
 	const result = await Student.findOne({
 		email: user.email
 	});
+	console.log(result);
 	if (result && bcrypt.compareSync(req.body.password, result.password)) {
-		var re=req.params.remember
+		var re=req.params.remember // remember
+		console.log(re);
 		if(re)
 		{
 			const token = jwt.sign({ _id: result._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
@@ -74,7 +76,7 @@ exports.studentLogin = async (req, res) => {
 			return res.json({
 				role:0,
 				token: token,
-				student: { _id,full_name,identity_card,gender,academic_year,field_of_major,folk,email,photo,religion,country,insurance,parentinfo,residentinfo,stayindorm}
+				user: { _id,full_name,identity_card,gender,academic_year,field_of_major,folk,email,photo,religion,country,insurance,parentinfo,residentinfo,stayindorm}
 			});
 	}
 	else
@@ -84,7 +86,7 @@ exports.studentLogin = async (req, res) => {
 			return res.json({
 				role:0,
 				token: token,
-				student: { _id,full_name,identity_card,gender,academic_year,field_of_major,folk,email,room,photo,religion,country,insurance,parentinfo,residentinfo,stayindorm}
+				user: { _id,full_name,identity_card,gender,academic_year,field_of_major,folk,email,room,photo,religion,country,insurance,parentinfo,residentinfo,stayindorm}
 			});
 	}
 
