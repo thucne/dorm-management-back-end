@@ -5,14 +5,8 @@ exports.addUtilitybill = async(req, res) => {
     let utility = new UtilityBill();
     utility.room = req.body.room;
     utility.recorddate = req.body.recorddate;
-    let power = req.body.power
-    power.map((record, index) => {
-        utility.power.push(record)
-    });
-    let water = req.body.water
-    water.map((record, index) => {
-        utility.water.push(record)
-    });
+    utility.power={last:req.body.lastpower,recent:req.body.recentpower}
+    utility.water={last:req.body.lastwater,recent:req.body.recentwater}
     utility.note = req.body.note;
 
     await utility.save(function(err, data) {
@@ -25,7 +19,7 @@ exports.addUtilitybill = async(req, res) => {
 }
 exports.getUtilityById = async(req, res) => {
     let _id = req.params._id;
-    UtilityBill.findById(_id).populate("room", "room")
+    UtilityBill.findById(_id).populate("room", "room block dorm_ID")
         .exec((err, result) => {
             if (err) {
                 return res.status(400).json({
@@ -80,7 +74,7 @@ exports.deletebill = async(req, res) => {
 exports.updatePaymentBill = async(req, res) => {
     UtilityBill.updateOne({ _id: req.params._id }, {
         $set: {
-            paymentstatus: req.body.paymentstatus,
+            paymentstatus: !paymentstatus,
         }
     }).exec((err, result) => {
         if (err) return res.status(400).json({ msg: err.message });
@@ -90,7 +84,7 @@ exports.updatePaymentBill = async(req, res) => {
 }
 exports.showNonPaidBill = async(req, res) => {
     await UtilityBill.find({ paymentstatus: false })
-        .populate('room', '_id room')
+        .populate('room', '_id room block floor')
         .exec((err, result) => {
             if (err) {
                 return res.status(401).json({

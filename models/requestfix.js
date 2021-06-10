@@ -9,11 +9,6 @@ const requestfix = mongoose.Schema({
         type: Date,
         default: Date.now()
     },
-    student: {
-        type: mongoose.Schema.Types.ObjectId,
-        require: true,
-        ref: 'Student'
-    },
     accept: {
         type: Boolean,
         default: false
@@ -23,7 +18,8 @@ const requestfix = mongoose.Schema({
         require: true
     },
     image: {
-        type: String
+        type: String,
+        default:''
     }
 
 

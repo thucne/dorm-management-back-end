@@ -1,11 +1,35 @@
 const Notification = require('../models/notification')
+exports.studentGetAnnouncementAndEmail = async (req, res) => {
+    await Notification.find({$or:[ {'to':"all"}, {'to':{ "$regex":req.body.email, "$options": "i" }}]})
+        .sort({ "createAt": -1 })
+        .exec((err, result) => {
+            if (err) {
+                return res.status(401).json({
+                    error: err
+                })
+            }
+            res.json({ data: result })
+        })
+}
+exports.adminGetAnnouncementAndEmail = async (req, res) => {
+    await Notification.find({})
+        .sort({ "createAt": -1 })
+        .exec((err, result) => {
+            if (err) {
+                return res.status(401).json({
+                    error: err
+                })
+            }
+            res.json({ data: result })
+        })
+}
 exports.createNotification = async (req, res) => {
-	const { title,photo,content } = req.body;
+	const { title,to,content } = req.body;
 	if (!title || !content)
 		return res.status(422).json({ error: "Please enter all the  fields" });
 	let noti = {};
 	noti.title = title;
-	noti.photo = photo;
+	noti.to =to;
 	noti.content = content;
     noti.createAt=Date.now();
 		//.catch(err=>console.log(err));
@@ -16,20 +40,6 @@ exports.createNotification = async (req, res) => {
 		else
 			return res.status(201).json({ msg: "Create notification success" });
 	});
-}
-exports.showAllNotification = async (req, res) => {
-    let limit = parseInt(req.query.limit) || 10
-    let page = parseInt(req.query.page) || 1
-    await Notification.find({}).limit(limit).skip((page - 1) * limit)
-        .sort({ "createAt": -1 })
-        .exec((err, result) => {
-            if (err) {
-                return res.status(401).json({
-                    error: err
-                })
-            }
-            res.json({ data: result })
-        })
 }
 exports.seeDetailNotification = async (req, res) => {
     Notification.find({_id:req.params._id})
@@ -49,6 +59,8 @@ exports.deleteNotification = async (req, res) => {
         // deleted at most one tank document
     });
 }
+
+
 exports.updateNotification=async (req,res)=>{
 	Notification.findById(req.params._id).exec((err, oldNoti) => {
 		if (err) {

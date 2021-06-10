@@ -8,13 +8,8 @@ const roomSchema = mongoose.Schema({
     room_type: { type: Number, require: true },
     dorm_ID: { type: String, require: true },
     studentlist: [{
-
-        _id: {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: 'Student'
-        },
-
-
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Student'
     }],
     note: {
         type: String,
@@ -23,4 +18,4 @@ const roomSchema = mongoose.Schema({
 
 });
 
-module.exports = Room = mongoose.model("Room", roomSchema, 'Room');
+module.exports=Room = mongoose.model("Room", roomSchema, 'Room');

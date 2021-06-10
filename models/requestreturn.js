@@ -3,13 +3,13 @@ const requestreturn = mongoose.Schema({
     room: {
         type: mongoose.Schema.Types.ObjectId,
         required: true,
-        ref: 'room'
+        ref: 'Room'
     },
     sendDate: { type: Date ,default:Date.now()},
     student:{
         type: mongoose.Schema.Types.ObjectId,
         require:true,
-        ref: 'student'
+        ref: 'Student'
     },
     accept:{
         type:Boolean,

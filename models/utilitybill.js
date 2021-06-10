@@ -5,19 +5,14 @@ const utilitySchema = mongoose.Schema({
         required: true,
         ref: 'Room'
     },
-    recorddate: { type: String, require: true },
-    power: [{
-        lastrecord: { type: Number, require: true },
-        recentrecord: { type: Number, require: true }
-    }],
-    water: [{
-        lastrecord: { type: Number, require: true },
-        recentrecord: { type: Number, require: true },
-
-    }],
+    createAt:{
+        type:Date,default:Date.now()
+    },
+    recorddate: { type: Date, default:Date.now() },
+    power: {type:Object,default:{},require:true},
+    water: {type:Object,default:{},require:true},
     paymentstatus: {
         type: Boolean,
-        require: true,
         default: false
     },
     note: { type: String, default: '' }

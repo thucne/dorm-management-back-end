@@ -5,19 +5,16 @@ exports.showAllRequestFix = async(req, res) => {
 
     await Requestfix.find({})
         .populate("room", "dorm block room")
-        .populate("student", "full_name")
+        .sort({"sendDate":-1})
         .exec()
         .then(requestfix => res.json({ data: requestfix }));
 }
 
 exports.addRequestfix = async(req, res) => {
-    const { student, room, fixnote } = req.body;
-    if (!room || !fixnote || !student)
-        return res.status(422).json({ error: "Please enter your room and fix information" });
+    const {room,fixnote,image } = req.body;
     let requestfix = new Requestfix();
     requestfix.room = room;
-    requestfix.image = req.body.image;
-    requestfix.student = student;
+    requestfix.image = image;
     requestfix.fixnote = fixnote;
     await requestfix.save(function(err, data) {
         if (err)
@@ -27,8 +24,8 @@ exports.addRequestfix = async(req, res) => {
     });
 }
 
-exports.studentCancelRequestFix = (req, res) => {
-    Requestfix.deleteOne({ student: req.body._id }, function(err) {
+exports.cancelRequestFix = (req, res) => {
+    Requestfix.deleteOne({ _id: req.params._id }, function(err) {
         if (err)
             return res.status(402).json({ msg: "Delete not complete" });
         else
@@ -39,9 +36,7 @@ exports.studentCancelRequestFix = (req, res) => {
 exports.adminAcceptRequest = (req, res) => {
     let _id = req.params._id;
     Requestfix.updateOne({ _id: _id }, {
-        $set: {
-            accept: req.body.accept
-        }
+        accept:true
     }).exec((err, result) => {
         if (err) {
             return res.status(400).json({
@@ -54,7 +49,7 @@ exports.adminAcceptRequest = (req, res) => {
 exports.showNonAcceptRequest = async(req, res) => {
     await Requestfix.find({ accept: false })
         .populate('room', 'dorm block room')
-        .populate('student', 'full_name')
+        .sort({"sendDate":1})
         .exec((err, result) => {
             if (err) {
                 return res.status(401).json({
@@ -64,9 +59,8 @@ exports.showNonAcceptRequest = async(req, res) => {
             res.json({ data: result })
         })
 }
-exports.adminSeeDetail = (req, res) => {
+exports.seeDetail = (req, res) => {
     Requestfix.find({ _id: req.params._id })
-        .populate("student", "full_name academic_year")
         .populate("room", "dorm block room")
         .exec((err, result) => {
             if (err) {
@@ -79,9 +73,9 @@ exports.adminSeeDetail = (req, res) => {
 }
 
 exports.studentCheckRequestFix = (req, res) => {
-    Requestfix.find({ student: req.body._id })
-        .populate("student", "full_name")
+    Requestfix.find({room: req.body._id })
         .populate("room", "dorm block room")
+        .sort({"sendDate":-1})
         .exec((err, result) => {
             if (err) {
                 return res.status(400).json({

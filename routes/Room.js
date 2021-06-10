@@ -1,18 +1,13 @@
 const express = require('express')
 const { requireadminLogin, requirestudentLogin } = require('../controllers/auth')
-const { showResidentRoom, addRoom, showAllRoom, deleteRoom, updateRoom, addStudent, adminSeeRoomByDorm, adminSeeRoomByDormBlock, adminSeeRoomType, adminSeeRoomByBlockFloor, adminSeeRoomByDormID } = require('../controllers/Room')
+const {createRoom, showAllRoom, deleteRoom, updateRoom,addStudentToRoom,seeRoomDetail,showAvailableRoom,removeStudentFromRoom } = require('../controllers/Room')
 const router = express.Router()
-router.post('/addRoom', requireadminLogin, addRoom);
-router.get('/resident/:_id', showResidentRoom);
-router.get('/showAllRoom', requireadminLogin, showAllRoom);
-router.put('/updateRoom/:_id', requireadminLogin, updateRoom);
-router.delete('/deleteRoom/:_id', requireadminLogin, deleteRoom);
-router.get('/adminSeeRoomByDormBlock', requireadminLogin, adminSeeRoomByDormBlock);
-router.post('/addStudent/:_id', requireadminLogin, addStudent);
-router.get('/adminSeeRoomByDorm', requireadminLogin, adminSeeRoomByDorm);
-router.get('/adminSeeRoomType', requireadminLogin, adminSeeRoomType);
-router.get('/adminSeeRoomByBlockFloor', requireadminLogin, adminSeeRoomByBlockFloor);
-router.get('/adminSeeRoomByDormID', requireadminLogin, adminSeeRoomByDormID);
-
-
+router.post('/createRoom',requireadminLogin,createRoom);//create new room
+router.get('/showAllRoom', requireadminLogin,showAllRoom);//show all room in dorm
+router.get('/deleteRoom/:_id',requireadminLogin,deleteRoom);//deleteroom base its _id
+router.get('/updateRoom/:_id', requireadminLogin,updateRoom);//update room info
+router.get('/showAvailableRoom/:room_type',showAvailableRoom);//show all room can add more
+router.put('/addStudentToRoom/:_id', requireadminLogin,addStudentToRoom);//add list of student to room
+router.delete('/seeRoomDetail/:_id', requireadminLogin,seeRoomDetail);//see Room detail by its _id
+router.put('/removeStudentFromRoom/:_id/:student', requireadminLogin,removeStudentFromRoom);//remove student from room
 module.exports = router

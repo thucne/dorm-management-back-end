@@ -1,39 +1,62 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-const studentSchema = mongoose.Schema({
-    folk: { type: String, require: true },
-    photo: { type: String, default: "no image" },
+const student = mongoose.Schema({
+    full_name: { type: String, require: true },
+    identity_card: { type: Number, require: true },
+    dob: { type: Date, require: true },
+    gender: { type: String, require: true },
+    academic_year: { type: Number, require: true },
+    field_of_major: { type: String, require: true },
+    folk: { type: String, require: true,default:'kinh' },
+    email:{
+        type:String,
+        required: true 
+    },
+    password:{
+        type:String,
+        required: true 
+    },
+    photo: {
+        type: String,
+        default: "no image",
+        minlength: 0,
+        maxlength: 500
+    },
     religion: {
+        type: String,
+        require: true,
+        default:''
+    },
+    country: {
         type: String,
         require: true
     },
-    stayindorm: {
-        type: Object,
-        default: {}
-    },
-    email: { type: String, require: true },
-    password: { type: String, require: true },
-    full_name: { type: String, require: true },
-    gender: { type: String, require: true },
-    residentinfo: {
-        type: Object,
-        default: {}
+    insurance: {
+        type:Object,
+        default:{}
+
     },
     parentinfo: {
         type: Object,
         default: {}
     },
-    academic_year: { type: Number, require: true },
-    dob: { type: String, require: true },
-    identity_card: { type: Number, require: true },
-    field_of_major: { type: String, require: true },
-    insurance: {
+    residentinfo: {
         type: Object,
         default: {}
     },
-
-
-
+    active: {
+        type: Boolean,
+        default: true
+    },
+    room:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Room',
+        default:''
+    },
+    stayindorm: [{
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Room'
+    }],
 });
 
-module.exports = student = mongoose.model("students", studentSchema, 'students');
+module.exports = Student = mongoose.model('student', student);
