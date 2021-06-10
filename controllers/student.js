@@ -65,11 +65,13 @@ exports.studentLogin = async (req, res) => {
 	const result = await Student.findOne({
 		email: user.email
 	});
-	console.log(result);
+
+	if (!result) return res.status(404).json({error: 'Not found!'});
+	
 	if (result && bcrypt.compareSync(req.body.password, result.password)) {
 		var re=req.params.remember // remember
 		console.log(re);
-		if(re)
+		if(!re === 'remember')
 		{
 			const token = jwt.sign({ _id: result._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 			const { _id,full_name,identity_card,gender,academic_year,field_of_major,folk,email,photo,religion,country,insurance,parentinfo,residentinfo,stayindorm } = result
@@ -114,7 +116,7 @@ exports.studentSeeStudent = (req, res) => {
 
 }
 exports.getStudentInfo=(req,res)=>{
-	let _id = req.params._id;
+	let {_id} = req.user;
 	Student.findById(_id).populate("room","_id dorm block floor room room_type dorm_ID").populate("stayindorm","_id room")
 		.exec((err, result) => {
 			if (err) {
@@ -122,7 +124,7 @@ exports.getStudentInfo=(req,res)=>{
 					error: err
 				})
 			}
-			res.json({student:result})
+			res.json(result);
 		})
 }
 exports.getStudentAccount=(req,res)=>{

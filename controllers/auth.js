@@ -33,7 +33,7 @@ exports.requirestudentLogin=(req,res,next)=>{
     if(!authorization){
      return res.status(401).json({error:"you must be loggin "})
     }
-     const token=authorization.replace("ititiu ","")
+     const token=authorization.replace("Bearer ","")
      jwt.verify(token,process.env.JWT_SECRET,(err,payload)=>{
          if(err)
         { 

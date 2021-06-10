@@ -67,15 +67,18 @@ exports.createAdminAccount=async(req,res)=>{
 exports.adminLogin = async (req, res) => {
 	let user = {};
 	user.email = req.body.email;
-	if (!user.email) res.status(404).json({message: 'Unauthorized access!'});
+	// if (!user.email) return res.status(404).json({error: 'Unauthorized access!'});
 	//let hash = bcrypt.hashSync(req.body.password, 10);
 	//let userModel = new admin(user);
 	const result = await Admin.findOne({
 		email: user.email
 	});
+
+	if (!result) return res.status(404).json({error: 'Admin not found!'});
+
 	if (result && bcrypt.compareSync(req.body.password, result.password)) {
 		var re=req.params.remember
-		if(re){
+		if(!re === 'remember'){
 			const token = jwt.sign({ _id: result._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 			const { _id, name,email,tel } = result
 			return res.json({
