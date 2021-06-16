@@ -58,7 +58,7 @@ exports.studentRegister = async (req, res) => {
 		user.password = bcrypt.hashSync(password, 10);
 		user.full_name = full_name;
 		user.gender = gender;
-		user.residentinfo = { provincecity: provincecity, district: district, ward: ward };
+		user.residentinfo = { provincecity: provincecity, district: district, ward: ward,telephone:tel };
 		user.parentinfo = { Contact_name: parentname, Address: address, Contact_telephone: telparent }
 		user.academic_year = academic_year
 		day = dob
@@ -68,7 +68,7 @@ exports.studentRegister = async (req, res) => {
 		user.folk = folk
 		user.religion = religion
 		user.country = country
-		user.room = romm
+		user.room = room
 		if (insurance_number.length > 0 && date_of_issue && valid_from && valid_to) {
 			user.insurance = { Number: insurance_number, date_of_issue: date_of_issue, valid_from: valid_from, valid_to: valid_to }
 		}
@@ -79,8 +79,18 @@ exports.studentRegister = async (req, res) => {
 		await studentModel.save(function (err, data) {
 			if (err)
 				return res.status(422).json({ error: err });
-			else
+			else{
+				Room.findOneAndUpdate({_id: room}, {
+					$push: {studentlist:data._id}
+				}, { new: true }).exec((err,room) => {
+					if (err || !room) {
+						return res.status(400).json({
+							error: "There are error. Please try again"
+						})
+					}
+			})
 				return res.status(201).json({ msg: "Register account for student successly" });
+			}
 		});
 	})
 
@@ -155,7 +165,7 @@ exports.getStudentInfo = (req, res) => {
 		})
 }
 exports.getStudentAccount = (req, res) => {
-	let _id = req.params._id;
+	let { _id } = req.user;
 	Student.findById(_id)
 		.exec((err, result) => {
 			if (err) {

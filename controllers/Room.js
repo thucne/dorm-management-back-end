@@ -71,9 +71,9 @@ exports.showAllRoom = async(req, res) => {
 };
 exports.showAvailableRoom=async(req,res)=>{
     var room_type=req.params.room_type
-    var students=req.body.students
     Room.find({room_type:room_type})
-    .where('room_type'-'studentlist.length').gte(students.length)
+    .where("studentlist.length").lte(room_type-1)
+    .select("_id room dorm_ID")
     .exec((err, result) => {
         if (err) {
             return res.status(400).json({
