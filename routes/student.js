@@ -1,8 +1,8 @@
 const express=require('express');
-const { requirestudentLogin, requireadminLogin } = require('../controllers/auth')
-const {studentRegister,studentLogin,studentSeeRoommate,studentSeeStudent,studentEditAccount,getStudentInfo,getStudentAccount,studentEditInfo,getRequestReturn,requestReturn,getRequestFix,requestFix,getBill} = require('../controllers/student');
+const { requirestudentLogin } = require('../controllers/auth')
+const {studentLogin,studentSeeRoommate,studentSeeStudent,studentEditAccount,getStudentInfo,getStudentAccount,studentEditInfo,getRequestReturn,requestReturn,getRequestFix,requestFix,getBill} = require('../controllers/student');
 const router=express.Router()
-router.post('/register',requireadminLogin,studentRegister);//student register
+
 router.post('/login/:remember',studentLogin);//student login
 router.post('/seeRoomate',requirestudentLogin,studentSeeRoommate);//student see list of roomate
 router.post('/seeStudent/:_id',requirestudentLogin,studentSeeStudent);//see detail info of roomate
