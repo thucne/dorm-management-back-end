@@ -99,6 +99,7 @@ exports.adminLogin = async (req, res) => {
 			//res.cookie('token', token, { expiresIn: '10d' })
 			const { _id, name, email, tel } = result
 			console.log("sada");
+
 			return res.json({
 				token: token,
 				user: { _id, name, email, tel },
