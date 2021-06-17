@@ -6,7 +6,7 @@ const Requestreturn = require('../models/requestreturn')
 const RequestFix = require('../models/requestfix')
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const {random,floor}= require('mathjs');
+const { random, floor } = require('mathjs');
 const formidable = require('formidable');
 const { request } = require('express')
 const dotenv = require('dotenv');
@@ -67,7 +67,7 @@ exports.studentRegister = async (req, res) => {
 			return res.status(422).json({ error: "Please enter all the  fields" });
 		if (re.test(String(email).toLowerCase()) == false)
 			return res.status(422).json({ error: "Invalid email" });
-	
+
 		Student.findOne({ email }, async (err, existedUser) => {
 			if (existedUser) {
 				return res.status(401).json({
@@ -111,9 +111,9 @@ exports.studentRegister = async (req, res) => {
 				}
 			});
 		})
-	
+
 	} catch (error) {
-		res.status(409).json({error: 'Something went wrong!'})
+		res.status(409).json({ error: 'Something went wrong!' })
 	}
 };
 exports.studentLogin = async (req, res) => {
@@ -197,34 +197,43 @@ exports.getStudentAccount = (req, res) => {
 		})
 }
 exports.studentEditAccount = async (req, res) => {
-	Student.find({_id:req.user._id}).exec((err, oldUser) => {
+	Student.findOne({ _id: req.user._id }).exec((err, result) => {
 		if (err) {
 			return res.status(400).json({
 				error: err
 			})
 		}
-
-		const { oldPassword, newPassword } = req.body;
-
-		if (oldPassword != null && String(oldPassword).trim().length > 0) {
-
-			if (bcrypt.compareSync(oldPassword, oldUser.password) == false)
-				return res.status(400).json({ error: "Password wrong" })
-			else {
-				if (newPassword == null || String(newPassword).trim().length == 0)
-					return res.status(400).json({ error: "You should decleare new password" })
-
-				oldUser.password = bcrypt.hashSync(String(newPassword).trim(), 10);
-			}
+		if (result == null) {
+			return res.status(400).json({
+				error: "Can not found"
+			})
 		}
-		oldUser.save((err, result) => {
-			if (err) {
+		else {
+			if (!bcrypt.compareSync(req.body.oldPassword, result.password)) {
 				return res.status(400).json({
-					error: err
+					error: "Wrong password"
 				})
 			}
-			res.json(oldUser)
-		})
+			else {
+				var hashPassword = bcrypt.hashSync(String(req.body.newPassword).trim(), 10);
+				const filter = { _id: req.user._id };
+				const update = { password: hashPassword };
+				Student.findOneAndUpdate(filter, update, (error, doc) => {
+					if (error) {
+						return res.status(400).json({
+							error: error.msg
+						})
+					}
+					else {
+						return res.json({ msg: "Update Successfully" })
+					}
+					// error: any errors that occurred
+					// doc: the document before updates are applied if new: false, or after updates if new = true
+				});
+			}
+
+		}
+
 	})
 
 };
