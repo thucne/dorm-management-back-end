@@ -1,6 +1,6 @@
 const express = require('express');
 const { requireadminLogin } = require('../controllers/auth')
-const { getDatabase, adminRegister, adminLogin, adminSeeStudent, adminSearchStudentByName, adminUpdateActiveStudent, getStudentList, getAdminAccount, editAccount, getAdminInfo, editInfo, createAdminAccount } = require('../controllers/admin');
+const { getDatabase, adminRegister, adminLogin, adminSeeStudent, adminSearchStudentByName, adminUpdateActiveStudent, getStudentList, getAdminAccount, editAccount, getAdminInfo, editInfo, createAdminAccount} = require('../controllers/admin');
 const { studentRegister } = require('../controllers/student');
 const router = express.Router()
 router.post('/register', requireadminLogin, adminRegister);//admin register

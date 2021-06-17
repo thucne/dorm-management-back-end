@@ -3,6 +3,7 @@ const Student = require('../models/student')
 const Room = require('../models/room')
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const {random,floor}= require('mathjs');
 const formidable = require('formidable');
 const Utility = require('../models/utilitybill');
 const Bill = require('../models/bill');
@@ -86,6 +87,7 @@ exports.adminLogin = async (req, res) => {
 		if (!re === 'remember') {
 			const token = jwt.sign({ _id: result._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 			const { _id, name, email, tel } = result
+			console.log("pass");
 			return res.json({
 				token: token,
 				user: { _id, name, email, tel },
@@ -96,6 +98,7 @@ exports.adminLogin = async (req, res) => {
 			const token = jwt.sign({ _id: result._id }, process.env.JWT_SECRET);
 			//res.cookie('token', token, { expiresIn: '10d' })
 			const { _id, name, email, tel } = result
+			console.log("sada");
 			return res.json({
 				token: token,
 				user: { _id, name, email, tel },
