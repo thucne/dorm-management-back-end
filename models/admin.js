@@ -8,8 +8,7 @@ const adminSchema = mongoose.Schema({
     recovery_code:{
         type:String,
         default:''
-    }
-
+    },
 });
 
 module.exports=Admin = mongoose.model("Admin", adminSchema, 'Admin');

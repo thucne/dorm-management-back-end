@@ -60,7 +60,7 @@ const student = mongoose.Schema({
     recovery_code:{
         type:String,
         default:''
-    }
+    },
 });
 
 module.exports = Student = mongoose.model('student', student);
