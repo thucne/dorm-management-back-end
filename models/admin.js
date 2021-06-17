@@ -4,8 +4,11 @@ const adminSchema = mongoose.Schema({
     gender: { type: String, require: true },
     email: { type: String, require: true },
     password: { type: String, require: true },
-    tel: { type: String, require: true }
-
+    tel: { type: String, require: true },
+    recovery_code:{
+        type:String,
+        default:''
+    },
 });
 
 module.exports=Admin = mongoose.model("Admin", adminSchema, 'Admin');

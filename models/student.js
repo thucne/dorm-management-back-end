@@ -57,6 +57,10 @@ const student = mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Room'
     }],
+    recovery_code:{
+        type:String,
+        default:''
+    },
 });
 
 module.exports = Student = mongoose.model('student', student);

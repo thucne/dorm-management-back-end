@@ -6,6 +6,7 @@ const Requestreturn = require('../models/requestreturn')
 const RequestFix = require('../models/requestfix')
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const {random,floor}= require('mathjs');
 const formidable = require('formidable');
 const { request } = require('express')
 const dotenv = require('dotenv');
@@ -196,43 +197,33 @@ exports.getStudentAccount = (req, res) => {
 		})
 }
 exports.studentEditAccount = async (req, res) => {
-	Student.findById(req.params._id).exec((err, oldUser) => {
+	Student.find({_id:req.user._id}).exec((err, oldUser) => {
 		if (err) {
 			return res.status(400).json({
 				error: err
 			})
 		}
-		let form = new formidable.IncomingForm();
-		form.keepExtensions = true;
 
-		form.parse(req, (err, fields, files) => {
+		const { oldPassword, newPassword } = req.body;
+
+		if (oldPassword != null && String(oldPassword).trim().length > 0) {
+
+			if (bcrypt.compareSync(oldPassword, oldUser.password) == false)
+				return res.status(400).json({ error: "Password wrong" })
+			else {
+				if (newPassword == null || String(newPassword).trim().length == 0)
+					return res.status(400).json({ error: "You should decleare new password" })
+
+				oldUser.password = bcrypt.hashSync(String(newPassword).trim(), 10);
+			}
+		}
+		oldUser.save((err, result) => {
 			if (err) {
-				return res.status(400).json({ error: err })
+				return res.status(400).json({
+					error: err
+				})
 			}
-			var { email, oldpassword, newpassword, reenterpassword } = fields
-			/* if(re.test(String(email).toLocaleLowerCase())==false||String(username).trim().length==0||String(newpassword).trim()!=String(reenterpassword).trim()||(String(oldpassword).trim().length>0&&String(newpassword).trim().length==0)||(String(oldpassword).trim().length==0&&String(newpassword).trim().length>0))
-			  return res.status(400).json({ error: "Something wrong while updating data, Please try again later" })*/
-			if (oldpassword != null && String(oldpassword).trim().length > 0) {
-				let hash = bcrypt.hashSync((oldpassword), 10);
-				if (bcrypt.compareSync(oldpassword, oldUser.password) == false)
-					return res.status(400).json({ error: "Password wrong" })
-				else {
-					if (newpassword == null || String(newpassword).trim().length == 0)
-						return res.status(400).json({ error: "You should decleare new password" })
-					else if (reenterpassword == null || String(newpassword).trim() != String(reenterpassword).trim())
-						return res.status(400).json({ error: "Reenter password not correct" })
-					oldUser.password = bcrypt.hashSync(String(newpassword).trim(), 10);
-				}
-			}
-			oldUser.save((err, result) => {
-				if (err) {
-					return res.status(400).json({
-						error: err
-					})
-				}
-				res.json({ msg: 'Update student account sucessfully', data: oldUser })
-			})
-
+			res.json(oldUser)
 		})
 	})
 
