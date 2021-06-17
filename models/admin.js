@@ -9,7 +9,6 @@ const adminSchema = mongoose.Schema({
         type:String,
         default:''
     },
-
 });
 
 module.exports=Admin = mongoose.model("Admin", adminSchema, 'Admin');
