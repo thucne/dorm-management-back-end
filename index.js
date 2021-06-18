@@ -18,9 +18,6 @@ app.use(morgan('dev'))
 
 // routes
 app.use(express.json());
-app.use('/', (req, res) => {
-    res.status(200).json({message: 'Welcome to IU Dormitory Back End!'})
-})
 app.use('/admin',require('./routes/admin.js'));
 app.use('/student',require('./routes/student.js'));
 app.use('/room',require('./routes/Room.js'));
