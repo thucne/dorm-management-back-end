@@ -85,17 +85,23 @@ exports.showAvailableRoom = async (req, res) => {
     //     type: String,
     //     default: ''
     // }
-
-    Room.find({ room_type: room_type, "studentlist.(room_type - 1)": { "$exists": false }  }, )
-        .select("_id room dorm_ID")
+    // var idx = room_type - 1
+    Room.find({ room_type: room_type })
+        .select("_id room dorm_ID studentlist")
         .exec((err, result) => {
             if (err) {
                 return res.status(400).json({
                     error: err
                 })
             }
-            res.json({ numRequest: room_type, number: result.length, data: result })
-        })
+            arr = []
+            for (var i = 0; i < result.length; i++) {
+                if (result[i].studentlist.length < room_type) {
+                    arr.push(result[i])
+                }
+            }
+            res.json({ numRequest: room_type, number: arr.length, data: arr })
+        });
 }
 exports.seeRoomDetail = async (req, res) => {
     var _id = req.params._id

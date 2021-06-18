@@ -92,6 +92,7 @@ exports.studentRegister = async (req, res) => {
 			user.insurance = insurance;
 			user.stayindorm = [];
 			user.stayindorm.push(room);
+			user.active = true;
 			//.catch(err=>console.log(err));
 			let studentModel = new Student(user);
 			await studentModel.save(function (err, data) {
@@ -131,6 +132,9 @@ exports.studentLogin = async (req, res) => {
 		var re = req.params.remember // remember
 		console.log(re);
 		if (!re === 'remember') {
+			if (result.active != null && result.active == false) {
+				return res.status(404).json({ error: "Your account was locked, contact to admin to fix it" })
+			}
 			const token = jwt.sign({ _id: result._id }, process.env.JWT_SECRET, { expiresIn: '1d' });
 			const { _id, full_name, identity_card, gender, academic_year, field_of_major, folk, email, photo, religion, country, insurance, parentinfo, residentinfo, stayindorm } = result
 			return res.json({
@@ -140,6 +144,9 @@ exports.studentLogin = async (req, res) => {
 			});
 		}
 		else {
+			if (result.active != null && result.active == false) {
+				return res.status(404).json({ error: "Your account was locked, contact to admin to fix it" })
+			}
 			const token = jwt.sign({ _id: result._id }, process.env.JWT_SECRET);
 			const { _id, full_name, identity_card, gender, academic_year, field_of_major, folk, email, photo, room, religion, country, insurance, parentinfo, residentinfo, stayindorm } = result
 			return res.json({
@@ -380,5 +387,31 @@ exports.requestReturn = async (req, res) => {
 			})
 		}
 		res.json({ msg: 'Send request successfully' })
+	})
+}
+
+exports.removeRequestFix = async (req, res) => {
+	Requestfix.findOneAndDelete({ _id: req.params._id }).exec((err, result) => {
+		if (err || result == null) {
+			return res.status(400).json({
+				error: "There are error. Please try again"
+			})
+		}
+		else {
+			return res.json({ msg: "Delete sucessfully" })
+		}
+	})
+}
+
+exports.removeRequestFix = async (req, res) => {
+	Requestfix.findOneAndDelete({ _id: req.params._id }).exec((err, result) => {
+		if (err || result == null) {
+			return res.status(400).json({
+				error: "There are error. Please try again"
+			})
+		}
+		else {
+			return res.json({ msg: "Delete sucessfully" })
+		}
 	})
 }

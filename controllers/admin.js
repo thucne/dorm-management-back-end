@@ -3,7 +3,7 @@ const Student = require('../models/student')
 const Room = require('../models/room')
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
-const {random,floor}= require('mathjs');
+const { random, floor } = require('mathjs');
 const formidable = require('formidable');
 const Utility = require('../models/utilitybill');
 const Bill = require('../models/bill');
@@ -134,19 +134,7 @@ exports.adminSeeStudent = (req, res) => {
 			res.json({ student: result })
 		})
 }
-exports.adminUpdateActiveStudent = (req, res) => {
-	let _id = req.params._id;
-	Student.updateOne({ _id: _id }, {
-		active: !active
-	}, { new: true }).exec((err, result) => {
-		if (err) {
-			return res.status(400).json({
-				error: err
-			})
-		}
-		res.json({ result });
-	})
-}
+
 exports.getStudentList = (req, res) => {
 	Student.find({}).populate("room", "_id room dorm_ID").populate("stayindorm", "_id room").exec((err, result) => {
 		if (err) {
@@ -155,6 +143,17 @@ exports.getStudentList = (req, res) => {
 			})
 		}
 		res.json({ data: result })
+	})
+}
+
+exports.getAllStudentsWithTheirRoomInfo = (req, res) => {
+	Student.find({}).populate("room", "_id room dorm_ID").populate("stayindorm", "_id room").select("_id email room active").exec((err, result) => {
+		if (err) {
+			return res.status(400).json({
+				error: err
+			})
+		}
+		res.json(result);
 	})
 }
 exports.getAdminAccount = (req, res) => {
@@ -220,7 +219,7 @@ exports.editAccount = (req, res) => {
 exports.editInfo = async (req, res) => {
 	const { _id } = req.user;
 	try {
-		Admin.findById(_id).exec( async (err, oldUser) => {
+		Admin.findById(_id).exec(async (err, oldUser) => {
 			if (err) {
 				return res.status(400).json({
 					error: err
@@ -346,3 +345,129 @@ exports.getDatabase = async (req, res) => {
 			return res.json([]);
 	}
 }
+
+exports.transferStudent = async (req, res) => {
+	if (req.body.oldRoom == null) {
+		Room.findOneAndUpdate({ _id: req.body.room }, {
+			$push: { studentlist: req.body._id }
+		}, { new: true }).exec((err, room) => {
+			if (err || room == null) {
+				return res.status(400).json({
+					error: "There are error. Please try again"
+				})
+			}
+			else {
+				const filter = { _id: req.body._id };
+				const update = { room: req.body.room };
+				Student.findOneAndUpdate(filter, update, (error, doc) => {
+					if (error) {
+						return res.status(400).json({
+							error: error.msg
+						})
+					}
+					else {
+						Student.findOneAndUpdate({ _id: req.body._id }, {
+							$push: { stayindorm: req.body.room }
+						}, { new: true }).exec((err, room) => {
+							if (err || !room) {
+								return res.status(400).json({
+									error: "There are error. Please try again"
+								})
+							}
+							else {
+								return res.json({ msg: "Add room succesfully" })
+							}
+						})
+					}
+				})
+			}
+		})
+	}
+	else {
+		Room.findOneAndUpdate({ _id: req.body.oldRoom }, {
+			$pull: { studentlist: req.body._id }
+		}, { new: true }).exec((err, room) => {
+			if (err || room == null) {
+				return res.status(400).json({ error: err })
+			}
+			else {
+				Room.findOneAndUpdate({ _id: req.body.room }, {
+					$push: { studentlist: req.body._id }
+				}, { new: true }).exec((err, room) => {
+					if (err || !room) {
+						return res.status(400).json({
+							error: "There are error. Please try again"
+						})
+					}
+					else {
+						const filter = { _id: req.body._id };
+						const update = { room: req.body.room };
+						Student.findOneAndUpdate(filter, update, (error, doc) => {
+							if (error) {
+								return res.status(400).json({
+									error: error.msg
+								})
+							}
+							else {
+								Student.findOneAndUpdate({ _id: req.body._id }, {
+									$push: { stayindorm: req.body.room }
+								}, { new: true }).exec((err, room) => {
+									if (err || !room) {
+										return res.status(400).json({
+											error: "There are error. Please try again"
+										})
+									}
+									else {
+										return res.json({ msg: "Tranfering succesfully" })
+									}
+								})
+							}
+						})
+					}
+				})
+			}
+		})
+	}
+}
+
+exports.removeStudentFromRoom = async (req, res) => {
+	console.log('bodi', req.body);
+	Room.findOneAndUpdate({ _id: req.body._id }, {
+		$pull: { studentlist: req.body.student }
+	}, { new: true }).exec((err, room) => {
+		if (err || room == null) {
+			return res.status(400).json({
+				error: "There are error. Please try again"
+			})
+		}
+		else {
+			const filter = { _id: req.body.student };
+			const update = { active: false };
+			Student.findOneAndUpdate(filter, update, (error, doc) => {
+				if (error) {
+					return res.status(400).json({
+						error: error
+					})
+				}
+				else {
+					return res.json({ msg: "Update successfully" })
+				}
+			})
+		}
+	})
+}
+
+exports.adminUpdateActiveStudent = (req, res) => {
+	let _id = req.body.student;
+	Student.updateOne({ _id: _id }, {
+		active: true
+	}, { new: true }).exec((err, result) => {
+		if (err || result === null) {
+			return res.status(400).json({
+				error: err
+			})
+		}
+		res.json({msg:"Activated account"});
+	})
+}
+
