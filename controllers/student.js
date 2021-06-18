@@ -346,7 +346,7 @@ exports.requestFix = async (req, res) => {
 				error: err
 			})
 		}
-		res.json({ msg: 'Send request successfully' })
+		res.json(result);
 	})
 
 	// form.parse(req, (err, fields, files) => {
