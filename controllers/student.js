@@ -192,14 +192,14 @@ exports.getStudentInfo = (req, res) => {
 		})
 }
 exports.getStudentAccount = (req, res) => {
-	let _id = req.params._id;
+	let _id = req.user._id;
 	Student.findById(_id)
 		.exec((err, result) => {
 			if (err) {
 				return res.status(400).json({ error: err })
 			}
 			const { email, full_name } = result
-			res.json({ account: { email, full_name } })
+			res.json({ email, full_name });
 
 		})
 }

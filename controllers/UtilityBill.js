@@ -5,10 +5,12 @@ exports.addUtilitybill = async(req, res) => {
     let utility = new UtilityBill();
     utility.room = req.body.room;
     utility.recorddate = req.body.recorddate;
-    utility.power={last:req.body.lastpower,recent:req.body.recentpower}
-    utility.water={last:req.body.lastwater,recent:req.body.recentwater}
+    utility.power= req.body.power;
+    utility.water= req.body.water;
     utility.note = req.body.note;
-
+    utility.paymentstatus = req.body.paymentstatus;
+    console.log(utility);
+    
     await utility.save(function(err, data) {
         if (err) {
             console.log(err)

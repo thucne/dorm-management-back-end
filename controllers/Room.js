@@ -65,8 +65,7 @@ exports.addStudentToRoom = async (req, res) => {
 
 };
 exports.showAllRoom = async (req, res) => {
-    await Room.find({}).sort({ "block": 1 }).exec().then(room => res.json({ data: room }));
-
+    await Room.find({}).sort({ "block": 1 }).exec().then(room => res.json(room));
 };
 exports.showAvailableRoom = async (req, res) => {
     var room_type = req.params.room_type;

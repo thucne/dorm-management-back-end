@@ -23,7 +23,7 @@ app.use('/student',require('./routes/student.js'));
 app.use('/room',require('./routes/Room.js'));
 app.use('/bill',require('./routes/bill.js'));
 app.use('/forget',require('./routes/forget.js'));
-//app.use('/utilitybill',require('./routes/utilitybill.js'));
+app.use('/utilitybill',require('./routes/UtilityBill.js'));
 //app.use('/requestfix',require('./routes/requestfix.js'));
 app.use('/requestreturn',require('./routes/requestreturn.js'));
 app.use('/notification',require('./routes/notification.js'));
